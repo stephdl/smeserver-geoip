@@ -1,0 +1,7 @@
+{
+    my @badcountries = split /[,:]/, ${qpsmtpd}{BadCountries} || '';
+
+    return "# No BadCountries are defined" unless (scalar @badcountries);
+
+    return join "\n", @badcountries;
+}

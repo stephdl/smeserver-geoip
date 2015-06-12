@@ -1,0 +1,6 @@
+{
+    return "# geoip disabled" unless (${qpsmtpd}{GeoIP} eq "enabled");
+
+    "check_badcountries";
+}
+

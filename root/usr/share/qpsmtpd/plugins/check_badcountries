@@ -1,0 +1,65 @@
+# -*- perl -*-
+
+=pod
+
+=head1 SYNOPSIS
+
+This plugin uses MaxMind's GeoIP service and the Geo::IP perl module to
+do a lookup on incoming connections and, if necessary, block the country 
+of origin.
+
+Since the COUNTRY DB is local, the lookups are very fast.
+
+If the country is on the 'badcountries' list from the system config db,
+it returns a DENY, killing the connection without response.
+
+=head1 CONFIG
+
+config/badcountries
+
+Each line is:
+- a country code
+  e.g. BR
+       KR
+
+=head1 BUGS AND LIMITATIONS
+
+If someone is in a 'badcountry,' emails won't come through. 
+
+=head1 AUTHOR
+
+Based on ident/geoip plugin from the qpsmtpd distribution.
+
+Copyright 2007 Doug Kruhm <dakruhm@daknetworks.net>
+
+This software is free software and may be distributed under the same
+terms as qpsmtpd itself.
+
+=cut
+
+use Geo::IP;
+
+my $geoip = Geo::IP->new(GEOIP_STANDARD);
+
+sub hook_connect {
+  my ($self) = @_;
+
+  my $country =
+    $geoip->country_code_by_addr( $self->qp->connection->remote_ip );
+  return DECLINED unless $country;
+
+  $self->qp->connection->notes('geoip_country', $country);
+  $self->log(LOGNOTICE, "GeoIP Country: $country");
+
+  if ( $self->qp->config("badcountries") ) {
+      my @badcountries = $self->qp->config("badcountries");
+  return DECLINED unless $country;
+
+      for (@badcountries) {
+          my ($pattern, $response) = split /\s+/, $_, 2;
+          return (DENY, "Country is on Blocked List") if ($country eq $pattern);
+      }
+  }
+
+  return DECLINED;
+}
