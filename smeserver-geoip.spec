@@ -1,6 +1,6 @@
 %define name smeserver-geoip
-%define version 1.0.5
-%define release 1
+%define version 1.2.0
+%define release 1%{?dist}
 
 Summary: SME Server geoip plugin
 Name: %{name}
@@ -22,6 +22,9 @@ CHANGE THE CONFIG DB: config setprop qpsmtpd BadCountries <countrycode> (i.e. co
 SIGNAL EVENT: signal-event email-update
 
 %changelog
+* Fri Jun 12 2015 stephane de Labrusse <stephdl@de-labrusse.fr> 1.2.0-1
+- Initial release to sme9
+
 * Mon Sep 03 2012 Doug Kruhm <dakruhm@daknetworks.net> 1.0.5
 - defining $country to reduce noise if not found [SME: 5011]
 - fixed misspelling in response if country is blocked [SME: 7058]
